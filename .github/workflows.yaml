@@ -1,0 +1,59 @@
+name: CI/CD to OCI VM
+
+on:
+  push:
+    branches:
+      - main # This workflow runs when code is pushed to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Use a fresh Ubuntu virtual machine as the runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 # Action to clone your GitHub repository into the runner
+
+    - name: Set up Node.js environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # Specify the Node.js version your app uses (e.g., '18', '20', '22')
+        cache: 'npm' # Cache npm dependencies for faster builds
+
+    - name: Install Node.js dependencies
+      # This step installs dependencies on the GitHub Actions runner.
+      # If your app has a package.json, this is important.
+      # Use `npm ci` for clean installs in CI environments.
+      run: npm ci
+
+    - name: Deploy application files via SCP
+      # This action securely copies your application files from the GitHub runner to your VM.
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}        # VM's Public IP from GitHub Secret
+        username: ${{ secrets.VM_USERNAME }} # VM's SSH username from GitHub Secret
+        key: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH Private Key from GitHub Secret
+        source: "./"                         # Copy all files from the current directory (your repo)
+        target: "${{ secrets.APP_PATH }}"    # Destination directory on your VM from GitHub Secret
+        strip_components: 0                  # Keep the directory structure as is
+
+    - name: Restart PM2 application on VM
+      # This action connects to your VM via SSH and executes commands to restart your app.
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Navigate to the application directory on the VM
+          cd ${{ secrets.APP_PATH }}
+
+          # Install production dependencies on the VM (if package.json changed)
+          # This is important if you didn't copy node_modules or if dependencies changed
+          npm install --production
+
+          # Restart the Node.js application using PM2
+          # Make sure 'PM2_APP_NAME' matches the name you use for your app in PM2
+          pm2 restart ${{ secrets.PM2_APP_NAME }}
+
+          # Optionally, save PM2 process list to ensure it restarts after VM reboots
+          # pm2 save
