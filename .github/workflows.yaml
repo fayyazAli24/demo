@@ -1,4 +1,4 @@
-name: CI/CD to OCI VM
+name: CI/CD to OCI VM 
 
 on:
   push:
