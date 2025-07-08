@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 
 const server = createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Hello World sahir is straight');
+  res.end('Hello World sahir removed from covalent');
 });
 
 // starts a simple http server locally on port 3000
