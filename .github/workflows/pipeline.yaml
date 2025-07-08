@@ -30,9 +30,11 @@ jobs:
         username: ${{ secrets.VM_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          sudo rm -rf ${{ secrets.APP_PATH }}/*
-          sudo cp -r /home/${{ secrets.VM_USERNAME }}/app-temp/* ${{ secrets.APP_PATH }}/
-          sudo chown -R www-data:www-data ${{ secrets.APP_PATH }}  # or root:root if needed
-          sudo rm -rf /home/${{ secrets.VM_USERNAME }}/app-temp
-          cd ${{ secrets.APP_PATH }}
-          sudo pm2 restart ${{ secrets.PM2_APP_NAME }}
+            sudo bash -c '
+            rm -rf ${{ secrets.APP_PATH }}/*
+            cp -r /home/${{ secrets.VM_USERNAME }}/app-temp/* ${{ secrets.APP_PATH }}/
+            chown -R www-data:www-data ${{ secrets.APP_PATH }}
+            rm -rf /home/${{ secrets.VM_USERNAME }}/app-temp
+            cd ${{ secrets.APP_PATH }}
+            pm2 restart ${{ secrets.PM2_APP_NAME }}
+          
