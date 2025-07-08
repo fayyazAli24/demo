@@ -16,14 +16,14 @@ jobs:
     - name: Set up Node.js environment
       uses: actions/setup-node@v4
       with:
-        node-version: '20' # Specify the Node.js version your app uses (e.g., '18', '20', '22')
+        node-version: '22' # Specify the Node.js version your app uses (e.g., '18', '20', '22')
         cache: 'npm' # Cache npm dependencies for faster builds
 
     - name: Install Node.js dependencies
       # This step installs dependencies on the GitHub Actions runner.
       # If your app has a package.json, this is important.
       # Use `npm ci` for clean installs in CI environments.
-      run: npm ci
+      # run: npm ci
 
     - name: Deploy application files via SCP
       # This action securely copies your application files from the GitHub runner to your VM.
