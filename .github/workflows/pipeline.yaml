@@ -13,33 +13,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Node.js environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        # No 'cache: npm' needed if no npm dependencies
-
-    # REMOVED: - name: Install Node.js dependencies
-    # REMOVED:   run: npm ci
-
-    - name: Deploy application files via SCP
+    - name: Upload app to temporary folder
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./"
-        target: "${{ secrets.APP_PATH }}"
+        target: "/home/${{ secrets.VM_USERNAME }}/app-temp"
         strip_components: 0
 
-    - name: Restart PM2 application on VM
+    - name: Move files & restart PM2 with sudo
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          sudo rm -rf ${{ secrets.APP_PATH }}/*
+          sudo cp -r /home/${{ secrets.VM_USERNAME }}/app-temp/* ${{ secrets.APP_PATH }}/
+          sudo chown -R www-data:www-data ${{ secrets.APP_PATH }}  # or root:root if needed
+          sudo rm -rf /home/${{ secrets.VM_USERNAME }}/app-temp
           cd ${{ secrets.APP_PATH }}
-          # REMOVED: npm install --production (not needed if no dependencies)
-          pm2 restart ${{ secrets.PM2_APP_NAME }}
-          # pm2 save
+          sudo pm2 restart ${{ secrets.PM2_APP_NAME }}
