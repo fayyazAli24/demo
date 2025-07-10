@@ -10,36 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        # No 'cache: npm' needed if no npm dependencies
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-    # REMOVED: - name: Install Node.js dependencies
-    # REMOVED:   run: npm ci
+      - name: Deploy application files via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./"
+          target: "${{ secrets.APP_PATH }}"
+          strip_components: 0
 
-    - name: Deploy application files via SCP
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.VM_HOST }}
-        username: ${{ secrets.VM_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./"
-        target: "${{ secrets.APP_PATH }}"
-        strip_components: 0
-
-    - name: Restart PM2 application on VM
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.VM_HOST }}
-        username: ${{ secrets.VM_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd ${{ secrets.APP_PATH }}
-          # REMOVED: npm install --production (not needed if no dependencies)
-          pm2 restart ${{ secrets.PM2_APP_NAME }}
-          # pm2 save
+      - name: Install dependencies and restart PM2 app on VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.APP_PATH }}
+            npm install --production
+            pm2 startOrReload ecosystem.config.js
+            pm2 save
