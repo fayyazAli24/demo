@@ -37,6 +37,5 @@ jobs:
           script: |
             cd ${{ secrets.APP_PATH }}
             npm install --production
-            pm2 startOrReload ecosystem.config.js
             pm2 restart demo
             pm2 save
