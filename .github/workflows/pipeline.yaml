@@ -28,7 +28,7 @@ jobs:
           target: "${{ secrets.APP_PATH }}"
           strip_components: 0
 
-      - name: Install dependencies and restart PM2 app on VM
+      - name: Build and run Docker container on VM
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VM_HOST }}
@@ -36,6 +36,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.APP_PATH }}
-            npm install --production
-            pm2 restart demo
-            pm2 save
+            docker build -t demo-image .
+            docker rm -f demo-container || true
+            docker run -d -p 3000:3000 --name demo-container demo-image
