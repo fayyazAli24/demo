@@ -14,4 +14,4 @@ ENV PORT 3000
 EXPOSE ${PORT}
 
 
-CMD ["node", "/src/index.js" ,]
+CMD ["npm","start"]
