@@ -1,5 +1,4 @@
 const express = require('express');
-const winston = require('winston');
 const app = express();
 const port = 3000;
 
@@ -10,5 +9,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  logger.info(`App listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });

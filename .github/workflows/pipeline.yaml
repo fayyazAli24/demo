@@ -36,6 +36,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.APP_PATH }}
-            docker build --no-cache -t demo-image .
+            docker build -t demo-image .
             docker rm -f demo-container || true
             docker run -d -p 3000:3000 --name demo-container demo-image
