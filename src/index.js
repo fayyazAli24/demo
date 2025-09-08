@@ -25,6 +25,15 @@ const translations = {
     button3: 'Annuler',
     change_lang: 'Changer de langue',
   },
+
+  ur_PK:{
+      title: 'Bienvenue',
+    button1: 'Cliquez-moi',
+    button2: 'Soumettre',
+    button3: 'Annuler',
+    change_lang: 'Changer de langue',
+  }
+
 };
 
 // ✅ API to get all translations
