@@ -26,13 +26,14 @@ const translations = {
     change_lang: 'Changer de langue',
   },
 
-  ur_PK:{
-      title: 'Bienvenue',
-    button1: 'Cliquez-moi',
-    button2: 'Soumettre',
-    button3: 'Annuler',
-    change_lang: 'Changer de langue',
-  }
+ ur_PK: {
+  title: 'خوش آمدید',
+  button1: 'کلک کریں',
+  button2: 'جمع کریں',
+  button3: 'منسوخ کریں',
+  change_lang: 'زبان تبدیل کریں',
+},
+
 
 };
 
