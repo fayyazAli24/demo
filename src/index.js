@@ -49,8 +49,9 @@ app.get('/languages', (req, res) => {
 });
 
 // ✅ API to add a new language (with auto translation)
-app.post('/add-language/:code', async (req, res) => {
-  const langCode = req.params.code;  // e.g. de_DE
+app.post('/add-language', async (req, res) => {
+ const { new_lang } = req.body; // ✅ correctly extract
+  const langCode = new_lang;     // e.g. "de_DE"
   const lang = langCode.split('_')[0]; // extract "de"
 
   if (translations[langCode]) {
